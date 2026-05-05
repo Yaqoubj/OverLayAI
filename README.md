@@ -1,85 +1,68 @@
 # OverlayAI
 
-OverlayAI is a floating overlay for AI chat websites. It opens the real site in a small always-on-top window, keeps you signed in, and can be shown or hidden quickly.
+OverlayAI is a floating desktop overlay for AI chat websites. It opens the real website in a small always-on-top window, keeps you signed in, and can be shown or hidden quickly while you work or play.
 
-## For Non-Technical Users
+## Download
 
-### Install OverlayAI
+Download the latest Windows installer from the GitHub Releases page:
 
-1. Download `OverlayAI-Setup-0.1.0.exe` from the project release page.
-2. Open the installer and follow the prompts.
-3. Launch OverlayAI from the Start menu or desktop shortcut.
+`OverlayAI-Setup-0.1.0.exe`
 
-### First Run
+Do not download the source code unless you are a developer. Normal users should use the installer from Releases.
 
-1. Choose your AI site in the settings window.
-2. Click `Toggle Overlay` or press `Ctrl+Space`.
-3. Sign in to the site inside the overlay once.
-4. After that, the app should remember you when you reopen it.
+## Install And Run
 
-### If you want a custom site
+1. Download `OverlayAI-Setup-0.1.0.exe` from Releases.
+2. Open the installer.
+3. Follow the setup steps.
+4. Launch OverlayAI from the Start menu or desktop shortcut.
+5. Choose your AI site in the settings window.
+6. Click `Toggle Overlay` or press `Ctrl+Space`.
+7. Sign in to the AI website inside the overlay.
 
-1. Paste the website URL.
+OverlayAI remembers your login session after the first sign-in.
+
+## Gaming Setup
+
+OverlayAI works best with games set to `Borderless Windowed`, `Windowed Fullscreen`, or `Borderless Fullscreen`.
+
+True exclusive fullscreen can cause Windows to minimize the game when another app window appears. This is normal Windows behavior for many games. OverlayAI can stay above normal and borderless windows, but it cannot guarantee smooth overlay behavior over every exclusive fullscreen game.
+
+Recommended gaming setup:
+
+1. Set the game display mode to `Borderless Windowed` or `Windowed Fullscreen`.
+2. Open OverlayAI before launching the game.
+3. Use `Ctrl+Space` to show or hide the overlay.
+4. If the overlay does not appear, open settings and click `Reset Overlay Position`.
+
+## When To Use Deep Hook
+
+Use Deep Hook only if the normal hotkey does not work while a game is focused.
+
+Deep Hook helps OverlayAI detect the shortcut when a game captures keyboard input, especially in exclusive fullscreen. It does not force the overlay to draw over every game, and it may still cause some games to minimize when the overlay appears.
+
+Do not enable Deep Hook unless you need it. Some anti-cheat software may flag low-level keyboard hooks, even when they are only used for shortcuts.
+
+OverlayAI does not read game memory, inject DLLs, inspect screen content, or persist the hook after a trigger. The helper listens only for the configured shortcut, triggers once, uninstalls the hook, and exits.
+
+## Custom Sites
+
+1. Paste the website URL in `Custom site URL`.
 2. Press `Enter` or click `Save Custom Site`.
 3. Click `Toggle Overlay`.
-4. If the window is not visible, use `Reset Overlay Position` and try again.
+4. If the window is not visible, use `Reset Overlay Position`.
 
-## What it does
+## Selection Assist
 
-- Loads AI chat websites inside a native desktop shell
-- Remembers login sessions with separate persistent partitions per site
-- Hides common headers, sidebars, and footer chrome with injected CSS
-- Shows a transparent always-on-top overlay with fade in/out behavior
-- Supports a standard global hotkey plus an optional Windows deep-hook helper
-- Lets you switch between presets like ChatGPT, Claude, Perplexity, Gemini, Copilot, DeepSeek, and Ollama WebUI
-- Resets the current site session to force a clean re-login
-- Optional Selection Assist sends copied text from other apps into the chat
+Selection Assist is optional.
 
-## Development
+1. Enable `Selection Assist` in settings.
+2. Select text in another app.
+3. Copy it with `Ctrl+C`.
+4. Press the assist shortcut, default `Ctrl+Shift+Space`.
+5. OverlayAI opens and places the copied text into the AI chat box.
 
-### Install dependencies
-
-```powershell
-npm install
-```
-
-### Optional: build the Windows deep-hook helper
-
-```powershell
-npm run build:hook
-```
-
-This requires the .NET 8 SDK on Windows.
-
-### Run the app
-
-```powershell
-npm start
-```
-
-### Build the Windows installer
-
-```powershell
-npm run dist:installer
-```
-
-The installer is created at `dist/OverlayAI-Setup-0.1.0.exe`.
-
-## Packaging
-
-Build an unpacked app:
-
-```powershell
-npm run dist:dir
-```
-
-Build Windows installer and portable output:
-
-```powershell
-npm run dist:win
-```
-
-## Supported sites
+## Supported Sites
 
 - ChatGPT
 - Claude
@@ -90,37 +73,55 @@ npm run dist:win
 - Ollama WebUI
 - Custom URLs
 
-## Using OverlayAI while gaming
+## Features
 
-OverlayAI works best with games set to `Borderless Windowed`, `Windowed Fullscreen`, or `Borderless Fullscreen` mode.
+- Floating always-on-top AI chat overlay
+- Persistent login sessions per site
+- Presets for popular AI chat websites
+- Custom URL support
+- Standard global hotkey
+- Optional Deep Hook mode for games that capture keyboard input
+- Optional Selection Assist for copied text
+- Reset session button for clean re-login
 
-In true exclusive fullscreen mode, Windows may minimize the game or push it to the taskbar when another app window appears. This is normal Windows behavior for many games. OverlayAI tries to stay always-on-top, but it cannot guarantee a smooth overlay over every exclusive fullscreen game.
+## Developer Setup
 
-Recommended setup for gaming:
+Install dependencies:
 
-1. Set the game display mode to `Borderless Windowed` or `Windowed Fullscreen`.
-2. Open OverlayAI before launching the game.
-3. Use the normal hotkey, default `Ctrl+Space`, to show or hide the overlay.
-4. If the overlay does not appear, use `Reset Overlay Position` in settings.
+```powershell
+npm install
+```
 
-### When to use Deep Hook
+Run the app:
 
-Use Deep Hook only if the normal hotkey does not work while a game is focused.
+```powershell
+npm start
+```
 
-Deep Hook helps OverlayAI detect the shortcut when a game captures keyboard input, especially in exclusive fullscreen. It does not force the overlay to draw over every game, and it may still cause some games to minimize when the overlay appears.
+Build the optional Windows deep-hook helper:
 
-Do not enable Deep Hook unless you need it. Some anti-cheat software may flag low-level keyboard hooks, even when they are only used for shortcuts.
+```powershell
+npm run build:hook
+```
 
-## Deep Hook warning
+Build the Windows installer:
 
-Deep Hook mode uses a low-level system keyboard hook for exclusive fullscreen games. Some anti-cheat software may flag this kind of behavior. Use it at your own risk.
+```powershell
+npm run dist:installer
+```
 
-OverlayAI does not read game memory, inject DLLs, inspect screen content, or persist the hook after a trigger. The helper listens only for the configured shortcut, triggers once, uninstalls the hook, and exits.
+The installer is created at:
 
-## Notes and troubleshooting
+```text
+dist/OverlayAI-Setup-0.1.0.exe
+```
 
-- Some AI sites change their DOM frequently, so the chrome-hiding CSS may need occasional updates.
-- If login looks blank or incomplete, reload the site from the settings window.
-- If an embedded site rejects the desktop user agent, adjust the preset or add a custom site entry.
-- Websites with strict anti-embedding behavior may still work because BrowserView is a full browser surface, but individual auth flows can vary.
-- macOS currently supports the standard global shortcut path only.
+The `dist/` folder is ignored by Git. Upload the installer through GitHub Releases instead of committing it to the repository.
+
+## Troubleshooting
+
+- If login looks blank or incomplete, click `Reload Site`.
+- If the overlay is missing, click `Reset Overlay Position`.
+- If a game minimizes, switch the game to borderless/windowed fullscreen.
+- If the normal hotkey does not work in a game, try Deep Hook mode.
+- Some AI sites change their layout often, so the chrome-hiding CSS may need updates.
