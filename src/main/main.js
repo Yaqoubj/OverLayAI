@@ -26,6 +26,10 @@ let autoDismissTimer = null;
 let hotkeyError = "";
 let deepHookError = "";
 
+function getAppIconPath() {
+  return path.join(app.getAppPath(), "assets", "app.ico");
+}
+
 function getSiteConfig(config = store.get()) {
   const preset = getPreset(config.activeSiteId);
   const custom = config.customSites.find((site) => site.id === config.activeSiteId);
@@ -41,6 +45,7 @@ function createSettingsWindow() {
     minWidth: 820,
     minHeight: 640,
     title: "OverlayAI Settings",
+    icon: getAppIconPath(),
     backgroundColor: "#0b1020",
     autoHideMenuBar: true,
     webPreferences: {
@@ -66,6 +71,7 @@ function createOverlayWindow() {
     resizable: true,
     movable: true,
     skipTaskbar: true,
+    icon: getAppIconPath(),
     alwaysOnTop: true,
     hasShadow: false,
     backgroundColor: "#00000000",
