@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QuickAI Settings</title>
+    <title>OverlayAI Settings</title>
     <link rel="stylesheet" href="./settings.css" />
   </head>
   <body>
     <main class="app">
       <section class="hero">
         <div>
-          <p class="eyebrow">QuickAI</p>
+          <p class="eyebrow">OverlayAI</p>
           <h1>Floating AI overlay</h1>
         </div>
         <div class="hero-actions">
@@ -57,7 +57,7 @@
                 class="hotkey-capture"
                 title="Click here, then press your shortcut (e.g. Ctrl+Shift+Space). Escape cancels. You can still type the shortcut in the box."
               >
-                Press keys…
+                Press keys...
               </button>
             </span>
           </label>
@@ -113,6 +113,21 @@
           </label>
           <p class="subtle">
             The overlay shell stays native-looking while the loaded website keeps its own theme where possible.
+          </p>
+        </div>
+
+        <div class="panel">
+          <h2>Selection Assist</h2>
+          <label class="toggle">
+            <input id="selectionAssistEnabled" type="checkbox" />
+            <span>Enable asking about copied text</span>
+          </label>
+          <label>
+            Assist shortcut
+            <input id="selectionAssistHotkey" type="text" placeholder="CommandOrControl+Shift+Space" spellcheck="false" />
+          </label>
+          <p class="subtle">
+            Select text in another app, copy it, then press the assist shortcut to send it into the chat box.
           </p>
         </div>
       </section>

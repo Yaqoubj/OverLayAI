@@ -7,7 +7,8 @@ const {
   globalShortcut,
   nativeTheme,
   screen,
-  shell
+  shell,
+  clipboard
 } = require("electron");
 
 const { ConfigStore, defaultConfig } = require("./store");
@@ -29,7 +30,7 @@ function getSiteConfig(config = store.get()) {
   const preset = getPreset(config.activeSiteId);
   const custom = config.customSites.find((site) => site.id === config.activeSiteId);
   const site = custom || preset || listPresets()[0];
-  const partition = config.siteSessions[site.id] || `persist:quickai:${site.id}`;
+  const partition = config.siteSessions[site.id] || `persist:overlayai:${site.id}`;
   return { ...site, partition };
 }
 
@@ -39,7 +40,7 @@ function createSettingsWindow() {
     height: 720,
     minWidth: 820,
     minHeight: 640,
-    title: "QuickAI Settings",
+    title: "OverlayAI Settings",
     backgroundColor: "#0b1020",
     autoHideMenuBar: true,
     webPreferences: {
@@ -166,7 +167,7 @@ async function injectSiteChrome(site) {
     (() => {
       ${theme}
       try {
-        const sessionKey = "__quickai_session_storage__";
+        const sessionKey = "__overlayai_session_storage__";
         if (!window.__quickaiSessionRestored) {
           const raw = localStorage.getItem(sessionKey);
           if (raw) {
@@ -186,7 +187,7 @@ async function injectSiteChrome(site) {
           });
         }
       } catch (error) {
-        console.debug("QuickAI sessionStorage bridge skipped", error);
+        console.debug("OverlayAI sessionStorage bridge skipped", error);
       }
       const selectors = ${JSON.stringify(
         [site.focusSelector, "textarea", "div[contenteditable='true']", "input[type='text']"].filter(Boolean)
@@ -208,6 +209,52 @@ async function injectSiteChrome(site) {
   } catch (error) {
     console.error("Failed to inject JS", error);
   }
+}
+
+async function insertTextIntoComposer(text) {
+  if (!overlayView || overlayView.webContents.isDestroyed() || !text) {
+    return false;
+  }
+
+  const escapedText = JSON.stringify(text);
+  const script = [
+    "(function() {",
+    `  const text = ${escapedText};`,
+    '  const selectors = ["textarea", "input[type=\'text\']", "div[contenteditable=\'true\']"];',
+    "  const input = selectors.map((selector) => document.querySelector(selector)).find(Boolean);",
+    "  if (!input) return false;",
+    "  input.focus();",
+    "  if (input.tagName === 'TEXTAREA' || input.tagName === 'INPUT') {",
+    "    input.value = input.value ? input.value + '\\n\\n' + text : text;",
+    "    input.dispatchEvent(new Event('input', { bubbles: true }));",
+    "    return true;",
+    "  }",
+    "  if (input.isContentEditable) {",
+    "    input.textContent = input.textContent ? input.textContent + '\\n\\n' + text : text;",
+    "    input.dispatchEvent(new Event('input', { bubbles: true }));",
+    "    return true;",
+    "  }",
+    "  return false;",
+    "})();"
+  ].join("\n");
+
+  try {
+    return Boolean(await overlayView.webContents.executeJavaScript(script, true));
+  } catch (error) {
+    console.error("Failed to insert clipboard text", error);
+    return false;
+  }
+}
+
+async function askAboutClipboardText() {
+  const text = clipboard.readText().trim();
+  if (!text) {
+    return false;
+  }
+
+  showOverlay();
+  const prompt = `Ask about this selected text:\n\n${text}`;
+  return insertTextIntoComposer(prompt);
 }
 
 function resolveThemeScript() {
@@ -327,15 +374,16 @@ function toggleOverlay() {
 
 function registerGlobalHotkey() {
   globalShortcut.unregisterAll();
-  let hotkey = store.get().hotkey;
+  const config = store.get();
+  let hotkey = config.hotkey;
   if (typeof hotkey !== "string" || !hotkey.trim()) {
     hotkey = defaultConfig.hotkey;
     store.set({ hotkey });
   }
 
-  function bind(accelerator) {
+  function bind(accelerator, callback = toggleOverlay) {
     return globalShortcut.register(accelerator, () => {
-      toggleOverlay();
+      callback();
     });
   }
 
@@ -352,6 +400,17 @@ function registerGlobalHotkey() {
       hotkeyError = registered ? "" : `Unable to register hotkey: ${fallback}`;
     } catch (err2) {
       hotkeyError = `Hotkey registration failed: ${String(err2.message)}`;
+    }
+  }
+
+  if (store.get().selectionAssistEnabled) {
+    const selectionHotkey = store.get().selectionAssistHotkey || defaultConfig.selectionAssistHotkey;
+    try {
+      bind(selectionHotkey, () => {
+        askAboutClipboardText().catch((error) => console.error("Selection Assist failed", error));
+      });
+    } catch (error) {
+      hotkeyError = `Selection Assist hotkey failed: ${String(error.message)}`;
     }
   }
 
@@ -448,6 +507,10 @@ function wireIpc() {
 
     if (patch.opacity !== undefined && overlayVisible) {
       overlayWindow.setOpacity(next.opacity);
+    }
+
+    if (patch.selectionAssistEnabled !== undefined || patch.selectionAssistHotkey !== undefined) {
+      registerGlobalHotkey();
     }
 
     if (patch.deepHookEnabled !== undefined) {

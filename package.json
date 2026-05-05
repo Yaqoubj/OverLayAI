@@ -1,5 +1,5 @@
 {
-  "name": "quickai",
+  "name": "overlayai",
   "version": "0.1.0",
   "description": "Floating AI website overlay desktop app",
   "main": "src/main/main.js",
@@ -14,8 +14,8 @@
     "dist:dir": "electron-builder --dir"
   },
   "build": {
-    "appId": "com.quickai.overlay",
-    "productName": "QuickAI",
+    "appId": "com.overlayai.app",
+    "productName": "OverlayAI",
     "files": [
       "src/**/*",
       "package.json"
@@ -42,7 +42,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "QuickAI"
+      "shortcutName": "OverlayAI"
     }
   },
   "devDependencies": {

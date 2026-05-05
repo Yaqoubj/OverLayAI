@@ -22,6 +22,8 @@ const elements = {
   autoDismissValue: document.getElementById("autoDismissValue"),
   dismissOnBlur: document.getElementById("dismissOnBlur"),
   pinMode: document.getElementById("pinMode"),
+  selectionAssistEnabled: document.getElementById("selectionAssistEnabled"),
+  selectionAssistHotkey: document.getElementById("selectionAssistHotkey"),
   matchSystemTheme: document.getElementById("matchSystemTheme"),
   forceTheme: document.getElementById("forceTheme"),
   siteStatus: document.getElementById("siteStatus"),
@@ -58,6 +60,8 @@ function render() {
     config.autoDismissSeconds === 0 ? "Disabled" : `${config.autoDismissSeconds}s`;
   elements.dismissOnBlur.checked = config.dismissOnBlur;
   elements.pinMode.checked = config.pinMode;
+  elements.selectionAssistEnabled.checked = config.selectionAssistEnabled;
+  elements.selectionAssistHotkey.value = config.selectionAssistHotkey;
   elements.matchSystemTheme.checked = config.matchSystemTheme;
   elements.forceTheme.value = config.forceTheme;
   elements.siteStatus.textContent = activeSite ? `Active: ${activeSite.name} - ${activeSite.url}` : "";
@@ -245,7 +249,7 @@ function stopHotkeyCapture() {
     return;
   }
   hotkeyCaptureActive = false;
-  elements.hotkeyCapture.textContent = "Press keys…";
+  elements.hotkeyCapture.textContent = "Press keys...";
   elements.hotkeyCapture.classList.remove("active");
   window.removeEventListener("keydown", onHotkeyCaptureKeydown, true);
   elements.hotkeyStatus.textContent = state.hotkeyError || "";
@@ -286,7 +290,7 @@ function startHotkeyCapture() {
     return;
   }
   hotkeyCaptureActive = true;
-  elements.hotkeyCapture.textContent = "Listening…";
+  elements.hotkeyCapture.textContent = "Listening...";
   elements.hotkeyCapture.classList.add("active");
   elements.hotkeyStatus.textContent = "";
   window.addEventListener("keydown", onHotkeyCaptureKeydown, true);
@@ -335,6 +339,12 @@ elements.autoDismiss.addEventListener("input", (event) =>
 );
 elements.dismissOnBlur.addEventListener("change", (event) => update({ dismissOnBlur: event.target.checked }));
 elements.pinMode.addEventListener("change", (event) => update({ pinMode: event.target.checked }));
+elements.selectionAssistEnabled.addEventListener("change", (event) =>
+  update({ selectionAssistEnabled: event.target.checked })
+);
+elements.selectionAssistHotkey.addEventListener("change", (event) =>
+  update({ selectionAssistHotkey: event.target.value.trim() })
+);
 elements.matchSystemTheme.addEventListener("change", (event) =>
   update({ matchSystemTheme: event.target.checked })
 );

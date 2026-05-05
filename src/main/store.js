@@ -7,6 +7,7 @@ const defaultConfig = {
   customSites: [],
   siteSessions: {},
   hotkey: "CommandOrControl+Space",
+  selectionAssistHotkey: "CommandOrControl+Shift+Space",
   deepHookEnabled: false,
   windowBounds: {
     width: 450,
@@ -19,6 +20,7 @@ const defaultConfig = {
   dismissOnBlur: true,
   dismissOnOutsideClick: true,
   pinMode: false,
+  selectionAssistEnabled: false,
   matchSystemTheme: true,
   forceTheme: "dark",
   backgroundTint: "#0b1020"
