@@ -105,6 +105,23 @@ function createOverlayWindow() {
   });
 }
 
+function destroyOverlayWindow() {
+  clearTimeout(autoDismissTimer);
+  overlayVisible = false;
+
+  if (overlayWindow && overlayView) {
+    overlayWindow.removeBrowserView(overlayView);
+    overlayView.webContents.destroy();
+    overlayView = null;
+  }
+
+  if (overlayWindow && !overlayWindow.isDestroyed()) {
+    overlayWindow.destroy();
+  }
+
+  overlayWindow = null;
+}
+
 function createOverlayView() {
   const site = getSiteConfig();
   overlayView = new BrowserView({
@@ -476,6 +493,33 @@ async function resetCurrentSession() {
   await rebuildOverlayView();
 }
 
+async function resetOverlayPosition() {
+  store.set({
+    windowBounds: { ...defaultConfig.windowBounds },
+    opacity: defaultConfig.opacity
+  });
+
+  destroyOverlayWindow();
+  createOverlayWindow();
+  createOverlayView();
+  ensureOverlayOnScreen();
+  broadcastConfig();
+  return buildSettingsPayload();
+}
+
+function endAllOperations() {
+  clearTimeout(autoDismissTimer);
+  globalShortcut.unregisterAll();
+  deepHook.disable();
+  destroyOverlayWindow();
+
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    settingsWindow.close();
+  }
+
+  app.quit();
+}
+
 function wireIpc() {
   ipcMain.handle("settings:load", () => buildSettingsPayload());
   ipcMain.handle("overlay:toggle", () => {
@@ -484,10 +528,12 @@ function wireIpc() {
   });
   ipcMain.handle("overlay:show", () => showOverlay());
   ipcMain.handle("overlay:hide", () => hideOverlay());
+  ipcMain.handle("overlay:reset-position", () => resetOverlayPosition());
   ipcMain.handle("overlay:pin", (_event, pinned) => {
     store.set({ pinMode: Boolean(pinned) });
     broadcastConfig();
   });
+  ipcMain.handle("app:end-all", () => endAllOperations());
   ipcMain.handle("site:reset-session", () => resetCurrentSession());
   ipcMain.handle("site:reload", () => overlayView?.webContents.reload());
   ipcMain.handle("settings:update", async (_event, patch) => {

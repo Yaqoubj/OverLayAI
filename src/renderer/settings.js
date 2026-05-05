@@ -32,7 +32,8 @@ const elements = {
   reloadSite: document.getElementById("reloadSite"),
   saveCustomSite: document.getElementById("saveCustomSite"),
   resetSession: document.getElementById("resetSession"),
-  resetOverlayPosition: document.getElementById("resetOverlayPosition")
+  resetOverlayPosition: document.getElementById("resetOverlayPosition"),
+  endAllOperations: document.getElementById("endAllOperations")
 };
 
 function render() {
@@ -312,15 +313,16 @@ elements.toggleOverlay.addEventListener("click", () => window.quickAI.toggleOver
 elements.reloadSite.addEventListener("click", () => window.quickAI.reloadSite());
 elements.resetSession.addEventListener("click", () => window.quickAI.resetSession());
 elements.resetOverlayPosition.addEventListener("click", async () => {
-  await update({
-    windowBounds: {
-      x: 120,
-      y: 120,
-      width: 450,
-      height: 550
-    }
-  });
-  setFormStatus("Overlay position reset. Click Toggle Overlay.");
+  const payload = await window.quickAI.resetOverlayPosition();
+  Object.assign(state, payload);
+  render();
+  setFormStatus("Overlay window reset. Click Toggle Overlay.");
+});
+elements.endAllOperations.addEventListener("click", () => {
+  const confirmed = window.confirm("End all OverlayAI operations and close the app?");
+  if (confirmed) {
+    window.quickAI.endAllOperations();
+  }
 });
 
 elements.activeSite.addEventListener("change", (event) => update({ activeSiteId: event.target.value }));

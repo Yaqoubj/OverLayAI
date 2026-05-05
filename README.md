@@ -2,6 +2,10 @@
 
 OverlayAI is a floating desktop overlay for AI chat websites. It opens the real website in a small always-on-top window, keeps you signed in, and can be shown or hidden quickly while you work or play.
 
+![OverlayAI floating chat overlay](assets/overlay-demo.png)
+
+![OverlayAI chat overlay example](assets/gaming-overlay.png)
+
 ## Download
 
 Download the latest Windows installer from the GitHub Releases page:
@@ -55,6 +59,8 @@ OverlayAI does not read game memory, inject DLLs, inspect screen content, or per
 ## Selection Assist
 
 Selection Assist is optional.
+
+![OverlayAI Selection Assist paste example](assets/paste-example.png)
 
 1. Enable `Selection Assist` in settings.
 2. Select text in another app.
