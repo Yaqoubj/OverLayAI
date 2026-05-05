@@ -1,0 +1,52 @@
+{
+  "name": "quickai",
+  "version": "0.1.0",
+  "description": "Floating AI website overlay desktop app",
+  "main": "src/main/main.js",
+  "author": "OpenAI Codex",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build:hook": "dotnet publish native/QuickAI.Hook/QuickAI.Hook.csproj -c Release -r win-x64 --self-contained false -o dist/native/hook",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win nsis portable",
+    "dist:installer": "electron-builder --win nsis",
+    "dist:dir": "electron-builder --dir"
+  },
+  "build": {
+    "appId": "com.quickai.overlay",
+    "productName": "QuickAI",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "dist/native/hook",
+        "to": "native/hook",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "QuickAI"
+    }
+  },
+  "devDependencies": {
+    "electron": "^37.10.3",
+    "electron-builder": "^26.0.12"
+  }
+}
